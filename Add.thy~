@@ -13,7 +13,6 @@ apply(induction z)
 apply(simp)
 apply(simp)
   done
-
 theorem addT0:"add 1 x = Suc x"
 proof(induct x)
   show "add 1 0 = Suc 0"
@@ -44,16 +43,41 @@ proof (induct y)
   qed
 next
   fix y0::nat
-  assume HIP:"\<forall>x. add x y0 = x + y0"
+  assume HI:"\<forall>x. add x y0 = x + y0"
   show "\<forall>x. add x (Suc y0) = x + (Suc y0)"
   proof (rule allI)
     fix x0::nat
     have "add x0 (Suc y0) = Suc (add x0 y0)" by (simp only:add02)
-    also have "... = Suc (x0 + y0)" by (simp only:HIP)
+    also have "... = Suc (x0 + y0)" by (simp only:HI)
     also have "... = x0 + (Suc y0)" by simp
     finally show "add x0 (Suc y0) = x0 + (Suc y0)" by simp
   qed
 qed
+
+theorem addT2:"\<forall>x. add x y = add y x"
+proof (induct y)
+  show "\<forall>x. add x 0 = add 0 x"
+  proof (rule allI)
+    fix x0::nat
+    have "add x0 0 = x0" by (simp only:add01)
+    also have "... = 0 + x0" by simp
+    also have "... = add 0 x0" by (simp only:addT1)
+    finally show "add x0 0 = add 0 x0" by simp
+  qed
+next
+  fix y0::nat
+  assume HI:"\<forall>x. add x y0 = add y0 x"
+  show "\<forall>x. add x (Suc y0) = add (Suc y0) x"
+  proof (rule allI)
+    fix x0::nat
+    have "add x0 (Suc y0) = Suc (add x0 y0)" by (simp only:add02)
+    also have "... = Suc (add y0 x0)" by (simp only:HI)
+    also  have "... = add (Suc y0) x0" by (simp only:addT1)
+    finally show "add x0 (Suc y0) = add (Suc y0) x0" by simp
+  qed
+qed
+
+
 
 inductive ev::"nat \<Rightarrow> bool"
 where
